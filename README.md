@@ -15,6 +15,7 @@ It only ever **adds what's missing** — it never overrides anything the client 
 | **Vehicle API** (`UnitHasVehicleUI`, `UnitInVehicle`, `CanExitVehicle`, …) | Stubbed to "no vehicle" — correct for a 1.12 server. |
 | **`UIPanelScrollFrame_OnLoad`** | FrameXML helper some scroll templates reference in XML `OnLoad` (e.g. NovaWorldBuffs). |
 | **`region:SetStatusBarTextureLSM(name)`** on WeakAuras aurabar regions | Added to every aurabar region, resolving the LibSharedMedia texture and applying it. |
+| **Battleground scoreboard faction** shown wrong (Horde/Alliance mixed up) | Wraps `GetBattlefieldScore` and re-derives each row's faction from its race (deterministic in vanilla), since the proxy mistranslates the faction field. |
 
 …plus a few smaller shims. See [`HermesCompat.lua`](HermesCompat.lua) — every fix is commented with *why* it exists.
 

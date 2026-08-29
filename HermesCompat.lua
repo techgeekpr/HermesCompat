@@ -96,6 +96,35 @@ if not C_Container then
 end
 
 -- =========================================================================
+--  0c) Battleground scoreboard faction fix -- the proxy mistranslates the
+--      faction field the server sends per scoreboard row, so players show under
+--      the wrong team. Race -> faction is deterministic in vanilla, so we wrap
+--      GetBattlefieldScore and override faction from race (0 = Horde, 1 = Alliance).
+-- =========================================================================
+do
+	local ALLIANCE, HORDE = 1, 0
+	local raceFaction = {
+		["Human"] = ALLIANCE, ["Dwarf"] = ALLIANCE, ["Night Elf"] = ALLIANCE,
+		["NightElf"] = ALLIANCE, ["Gnome"] = ALLIANCE,
+		["Orc"] = HORDE, ["Undead"] = HORDE, ["Scourge"] = HORDE, ["Forsaken"] = HORDE,
+		["Tauren"] = HORDE, ["Troll"] = HORDE,
+	}
+	local original = GetBattlefieldScore
+	if type(original) == "function" then
+		function GetBattlefieldScore(index)
+			local name, killingBlows, honorableKills, deaths, honorGained,
+			      faction, race, class, classToken, damageDone, healingDone = original(index)
+			local corrected = race and raceFaction[race]
+			if corrected ~= nil then
+				faction = corrected   -- trust race, not the proxy's faction field
+			end
+			return name, killingBlows, honorableKills, deaths, honorGained,
+			       faction, race, class, classToken, damageDone, healingDone
+		end
+	end
+end
+
+-- =========================================================================
 --  1) Vehicle API stubs (return "no vehicle", correct for a 1.12 server).
 -- =========================================================================
 local function retFalse() return false end
