@@ -1,4 +1,4 @@
-## Interface: 11402
+## Interface: 11507
 ## Title: Hermes Compat (API Shim)
 ## Notes: Defines modern WoW API functions/methods that are missing on a 1.12 server accessed through a proxy, so modern WeakAuras/addons stop erroring, plus fixes the BG scoreboard faction.
 ## Author: fix for valrios
