@@ -21,7 +21,7 @@ It only ever **adds what's missing** — it never overrides anything the client 
 
 ### Note on the Battleground scoreboard fix (partial)
 
-This one can't be fully fixed from the client, and here's the honest reason (confirmed by the HermesProxy devs):
+This one can't be fully fixed from the client, and here's the honest reason (confirmed by the Jim'sProxy devs):
 
 Vanilla PvP-log rows carry **no** race/class/faction — the proxy fills them from a player-name cache. On a **cache miss** it *fabricates* the row as **Human / Warrior / Horde**, so any player the client hasn't name-resolved yet shows as a Human Warrior on the Horde side. Rows "heal" as the cache fills over the course of a match.
 
