@@ -15,9 +15,22 @@ It only ever **adds what's missing** — it never overrides anything the client 
 | **Vehicle API** (`UnitHasVehicleUI`, `UnitInVehicle`, `CanExitVehicle`, …) | Stubbed to "no vehicle" — correct for a 1.12 server. |
 | **`UIPanelScrollFrame_OnLoad`** | FrameXML helper some scroll templates reference in XML `OnLoad` (e.g. NovaWorldBuffs). |
 | **`region:SetStatusBarTextureLSM(name)`** on WeakAuras aurabar regions | Added to every aurabar region, resolving the LibSharedMedia texture and applying it. |
-| **Battleground scoreboard faction** shown wrong (Horde/Alliance mixed up) | Wraps `GetBattlefieldScore` and re-derives each row's faction from its race (deterministic in vanilla), since the proxy mistranslates the faction field. |
+| **Battleground scoreboard faction** shown wrong (Horde/Alliance mixed up) | Wraps `GetBattlefieldScore` and re-derives each row's faction from its race. **Partial workaround** — see the note below. |
 
 …plus a few smaller shims. See [`HermesCompat.lua`](HermesCompat.lua) — every fix is commented with *why* it exists.
+
+### Note on the Battleground scoreboard fix (partial)
+
+This one can't be fully fixed from the client, and here's the honest reason (confirmed by the HermesProxy devs):
+
+Vanilla PvP-log rows carry **no** race/class/faction — the proxy fills them from a player-name cache. On a **cache miss** it *fabricates* the row as **Human / Warrior / Horde**, so any player the client hasn't name-resolved yet shows as a Human Warrior on the Horde side. Rows "heal" as the cache fills over the course of a match.
+
+Because this addon re-derives faction from **race**:
+
+- **Cached rows** → no-op (the proxy already derived faction from race correctly). ✅
+- **Uncached rows** → the race is the fabricated *Human*, so the wrap flips them to **Alliance** — correct for uncached Alliance players, still wrong for uncached Horde ones, until the row heals.
+
+So it **shifts** which uncached rows are wrong rather than fully fixing them — a client addon can't tell a fabricated Human-Warrior from a real one. The proper fix is proxy-side (name-query the unknown GUIDs on a cache miss instead of fabricating an identity). Once that ships, this wrap becomes a harmless no-op.
 
 ## Install
 
